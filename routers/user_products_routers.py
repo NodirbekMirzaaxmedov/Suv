@@ -6,7 +6,7 @@ from schemas.users_schemas import CreateUser
 from utils.db_operations import get_in_db
 from db import database
 from utils.role_checker import *
-from functions.user_products_func import all_user_products,create_user_products_y,update_user_products_y
+from functions.user_products_func import all_user_products,create_user_products_y, delete_user_products_r,update_user_products_y
 from models.user_products import User_products
 from schemas.user_products_schemas import UpdateUserProduct,CreateUserProduct
 
@@ -43,8 +43,10 @@ def update_products(this_user_products: UpdateUserProduct, db: Session = Depends
     update_user_products_y(this_user_products, db, current_user)
     raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 
-
-
-
-
+@user_products_router.delete("/delete_user_products")
+def delete_user_products(id: int, db: Session = Depends(database),
+                current_user: CreateUser = Depends(get_current_user)):
+    role_verification(user=current_user)
+    delete_user_products_r(id, db)
+    raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 

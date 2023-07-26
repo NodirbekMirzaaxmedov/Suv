@@ -1,9 +1,9 @@
 from fastapi import APIRouter,HTTPException,Depends
 from sqlalchemy.orm import Session
 from db import database
-from functions.trades_func import all_trades_r, create_trade_r
+from functions.trades_func import all_trades_r, create_trade_r, delete_trades_r, update_trade_r
 from models.trades import Trades
-from schemas.trades_schemas import CreateTrade
+from schemas.trades_schemas import CreateTrade, UpdateTrade
 from schemas.users_schemas import CreateUser
 from utils.auth import get_current_user
 from utils.db_operations import get_in_db
@@ -29,4 +29,16 @@ def create_trades(new_trade: CreateTrade,db: Session = Depends(database),current
     role_verification(user=current_user)
     create_trade_r(new_trade,db,current_user)
     raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
+@trades_router.put("/update_trade")
+def update_trades(this_trade: UpdateTrade,db: Session = Depends(database),current_user: CreateUser = Depends(get_current_user)):
+    role_verification(user=current_user)
+    update_trade_r(this_trade,db,current_user)
+    raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 
+
+@trades_router.delete("/delete_trade")
+def delete_trade(id: int, db: Session = Depends(database),
+                current_user: CreateUser = Depends(get_current_user)):
+    role_verification(user=current_user)
+    delete_trades_r(id, db)
+    raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")

@@ -18,13 +18,13 @@ orders_router = APIRouter(
 
 @orders_router.get("/get_orders")
 def get_orders(search: str = None, id: int = 0, page: int = 0, limit: int = 25, db: Session = Depends(database),
-              current_user: CreateUser = Depends(get_current_user),branch_id: int = 0):
+              current_user: CreateUser = Depends(get_current_user),branch_id: int = 0,status: str = None):
     role_verification(user=current_user)
     if page < 0 or limit < 0:
         raise HTTPException(status_code=400, detail="page yoki limit 0 dan kichik kiritilmasligi kerak")
     if id > 0:
         return get_in_db(db, Orders, id)
-    return all_orders(search, page, limit, db,branch_id)
+    return all_orders(search, page, limit, db,branch_id,status)
 
 
 @orders_router.post("/create_order")

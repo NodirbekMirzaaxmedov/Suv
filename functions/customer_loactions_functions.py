@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from models.customer_locations import Customer_locations
-from utils.db_operations import get_in_db, save_in_db
+from utils.db_operations import get_in_db, save_in_db,update_checker
 from utils.paginatsiya import pagination
 
 
@@ -34,19 +34,27 @@ def create_customer_locations_y(form, db,this_user):
     )
     save_in_db(db, new_customer_locations_db)
 
+
 def update_customer_loactions_y(form,db,this_user):
     if get_in_db(db, Customer_locations, form.id):
-        db.query(Customer_locations).filter(Customer_locations.id == form.id).update({
-            Customer_locations.id: form.id,
-            Customer_locations.name: form.name,
-            Customer_locations.map_long: form.map_long,
-            Customer_locations.map_lat: form.map_lat,
-            Customer_locations.adress: form.adress,
-            Customer_locations.user_id: this_user.id,
-            Customer_locations.branch_id: this_user.branch_id,
-            Customer_locations.orienter: form.orienter,
-            Customer_locations.customer_id: form.customer_id,
-        })
-        db.commit()
+        u_check = update_checker(db,Customer_locations,form.id,form)
+        if u_check == "Can":
+            db.query(Customer_locations).filter(Customer_locations.id == form.id).update({
+                Customer_locations.id: form.id,
+                Customer_locations.name: form.name,
+                Customer_locations.map_long: form.map_long,
+                Customer_locations.map_lat: form.map_lat,
+                Customer_locations.adress: form.adress,
+                Customer_locations.user_id: this_user.id,
+                Customer_locations.branch_id: this_user.branch_id,
+                Customer_locations.orienter: form.orienter,
+                Customer_locations.customer_id: form.customer_id,
+            })
+            db.commit()
+        else:
+            return update_checker(db,Customer_locations,form.id,form)
 
-
+def delete_customer_locations_r(id, db):
+    get_in_db(db, Customer_locations, id)
+    db.query(Customer_locations).filter(Customer_locations.id == id).delete()
+    db.commit()

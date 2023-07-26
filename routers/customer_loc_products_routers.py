@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from functions.customer_loc_products_func import all_customer_loc_products,create_customer_loc_product_y,update_customer_loc_product_y
+from functions.customer_loc_products_func import all_customer_loc_products,create_customer_loc_product_y, delete_customer_loc_products_r,update_customer_loc_product_y
 from models.customer_loc import Customer_loc_products
 from utils.auth import get_current_user
 from utils.db_operations import get_in_db
@@ -54,3 +54,9 @@ def update_product_loc(this_order: UpdateCustomerLocProducts, db: Session = Depe
 
 
 
+@customer_loc_products_router.delete("/delete_customer_loc_products")
+def delete_customer_loc_products(id: int, db: Session = Depends(database),
+                current_user: CreateUser = Depends(get_current_user)):
+    role_verification(user=current_user)
+    delete_customer_loc_products_r(id, db)
+    raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")

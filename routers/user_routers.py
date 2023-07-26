@@ -2,7 +2,7 @@ import inspect
 
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from functions.user_functions import create_user_r, all_users, update_user_r
+from functions.user_functions import create_user_r, all_users, delete_user_r, update_user_r
 from models.users import Users
 from utils.auth import get_current_user
 from utils.db_operations import get_in_db
@@ -27,7 +27,6 @@ def get_users(search: str = None, id: int = 0, page: int = 0, limit: int = 25, s
     return all_users(search, page, limit, status, db,branch_id,role)
 
 
-
 @users_router.post("/create_user")
 def create_user(new_user: CreateUser, db: Session = Depends(database),current_user: CreateUser = Depends(get_current_user)):
     role_verification(user=current_user)
@@ -42,6 +41,13 @@ def update_user(this_user: UpdateUser, db: Session = Depends(database),
     update_user_r(this_user, db, current_user)
     raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 
+
+@users_router.delete("/delete_user")
+def delete_user(id: int, db: Session = Depends(database),
+                current_user: CreateUser = Depends(get_current_user)):
+    role_verification(user=current_user)
+    delete_user_r(id, db)
+    raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 
 
 

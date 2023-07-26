@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import joinedload
 from functions.phones_func import create_phone, update_phone
 from models.phones import Phones
-from utils.db_operations import save_in_db, get_in_db
+from utils.db_operations import save_in_db, get_in_db, update_checker
 from utils.paginatsiya import pagination
 from models.suppliers import Suppliers
 
@@ -44,19 +44,28 @@ def update_supplier_e(form, db, thisuser):
             or get_in_db(db, Phones, form.phones[0].id) is None:
         raise HTTPException(status_code=400, detail="Supplier or Phone not found!")
 
-    db.query(Suppliers).filter(Suppliers.id == form.id).update({
-        Suppliers.id: form.id,
-        Suppliers.name: form.name,
-        Suppliers.address: form.address,
-        Suppliers.map_lat: form.map_lat,
-        Suppliers.map_long: form.map_long,
-        Suppliers.branch_id: thisuser.branch_id,
-        Suppliers.user_id: thisuser.id
-    })
-    db.commit()
+    u_check = update_checker(db,Suppliers,form.id,form)
+    if u_check == "Can":
+        db.query(Suppliers).filter(Suppliers.id == form.id).update({
+            Suppliers.id: form.id,
+            Suppliers.name: form.name,
+            Suppliers.address: form.address,
+            Suppliers.map_lat: form.map_lat,
+            Suppliers.map_long: form.map_long,
+            Suppliers.branch_id: thisuser.branch_id,
+            Suppliers.user_id: thisuser.id
+        })
+        db.commit()
+    else:
+        return u_check
 
     for i in form.phones:
         phone_id = i.id
         comment = i.comment
         number = i.number
         update_phone(phone_id, comment, number, form.id, thisuser.id, db, 'suppliers',thisuser.branch_id)
+
+def delete_supplier_r(id, db):
+    get_in_db(db, Suppliers, id)
+    db.query(Suppliers).filter(Suppliers.id == id).delete()
+    db.commit()

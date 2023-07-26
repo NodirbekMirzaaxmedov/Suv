@@ -6,7 +6,7 @@ from models.customers import Customers
 from models.warehouse_products import Warehouses
 from models.uploaded_files import Uploaded
 from models.users import Users
-from utils.db_operations import save_in_db
+from utils.db_operations import get_in_db, save_in_db
 from utils.paginatsiya import pagination
 
 def all_files_r(search, page, limit, db,branch_id):
@@ -82,9 +82,7 @@ def update_file_e(id, new_file, source, source_id, db, user,comment):
         raise HTTPException(status_code=400, detail="Source error!")
 
 
-# def delete_file_e(id, db, user):
-#     file = the_one(db, Uploaded, id, user)
-#     if file.source == "collaction" or file.source == "material" or file.source == "mechanism":
-#         raise HTTPException(status_code=400, detail="Userdan boshqasini rasmini ochirib bolmaydi!")
-#     db.query(Uploaded).filter(Uploaded.id == id).delete()
-#     db.commit()
+def delete_file_e(id, db, user):
+    get_in_db(db,Uploaded,id)
+    db.query(Uploaded).filter(Uploaded.id == id).delete()
+    db.commit()

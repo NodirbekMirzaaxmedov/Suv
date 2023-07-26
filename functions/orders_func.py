@@ -10,8 +10,10 @@ from models.orders import Orders
 from utils.role_checker import role_admin, role_driver, role_operator, role_warehouser
 
 
-def all_orders(search, page, limit, db,branch_id):
-    orders = db.query(Orders).join(Orders.customer_loc).join(Orders.created_user).join(Orders.trades).options(joinedload(Orders.customer_loc), joinedload(Orders.created_user), joinedload(Orders.trades))
+def all_orders(search, page, limit, db,branch_id,status):
+    orders = db.query(Orders).join(Orders.customer_loc).join(Orders.created_user).options(joinedload(Orders.customer_loc), joinedload(Orders.created_user))
+    if status != None:
+        orders = orders.filter(Orders.status == status)
     if branch_id > 0:
         orders = orders.filter(Orders.branch_id ==  branch_id)
     if search:
@@ -23,11 +25,11 @@ def all_orders(search, page, limit, db,branch_id):
 
 def create_order_r(data, db, thisuser):
     get_in_db(db, Customer_locations, data.customer_loc_id)
-    driver = db.query(Users).filter(Users.id == data.driver_id).first()
-    warehouser = db.query(Users).filter(Users.id == data.warehouser_id).first()
     branch = db.query(Branches).filter(Branches.id == thisuser.branch_id).first()
-    operator = db.query(Users).filter(Users.id == thisuser.id).first()
-    if role_admin(thisuser) or role_warehouser(warehouser) or role_driver(driver) or role_operator(operator) or branch != None:
+    old_number = len(db.query(Orders).all())
+    print(old_number)
+    print("#@#@#@#@#@#@#@")
+    if branch != None:
         new_order = Orders(
             name = data.name,
             operator_id=thisuser.id,
@@ -38,6 +40,7 @@ def create_order_r(data, db, thisuser):
             customer_loc_id=data.customer_loc_id,
             user_id=thisuser.id,
             branch_id=thisuser.branch_id,
+            number = old_number + 1
         )
         save_in_db(db, new_order)
 

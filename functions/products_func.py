@@ -46,3 +46,7 @@ def update_products_y(form,db,this_user):
         })
         db.commit()
 
+def delete_product_r(id, db):
+    get_in_db(db, Products, id)
+    db.query(Products).filter(Products.id == id).delete()
+    db.commit()

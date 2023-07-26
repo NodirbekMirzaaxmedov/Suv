@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from functions.categories_func import create_category_y, update_category_y, all_categories
+from functions.categories_func import create_category_y, delete_categories_r, update_category_y, all_categories
 from models.categories import Categories
 from utils.auth import get_current_user
 from utils.db_operations import get_in_db
@@ -45,6 +45,12 @@ def update_category(this_category: UpdateCategory, db: Session = Depends(databas
     raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 
 
+@categories_router.delete("/delete_categories")
+def delete_categories(id: int, db: Session = Depends(database),
+                current_user: CreateUser = Depends(get_current_user)):
+    role_verification(user=current_user)
+    delete_categories_r(id, db)
+    raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 
 
 

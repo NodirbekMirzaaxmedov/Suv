@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from functions.expenses_func import all_expenses, create_expenses_y, update_expenses_y
+from functions.expenses_func import all_expenses, create_expenses_y, delete_expenses_r, update_expenses_y
 from functions.products_func import all_products,create_products_y,update_products_y
 from models.expenses import Expenses
 from utils.auth import get_current_user
@@ -43,6 +43,12 @@ def update_expenses(this_expenses: UpdateExpenses, db: Session = Depends(databas
     update_expenses_y(this_expenses, db, current_user)
     raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 
+@expenses_router.delete("/delete_expenses")
+def delete_expenses(id: int, db: Session = Depends(database),
+                current_user: CreateUser = Depends(get_current_user)):
+    role_verification(user=current_user)
+    delete_expenses_r(id, db)
+    raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 
 
 

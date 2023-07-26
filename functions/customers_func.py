@@ -3,7 +3,7 @@ from functions.phones_func import create_phone, update_phone
 from models.customer_locations import Customer_locations
 from models.customers import Customers
 from models.phones import Phones
-from utils.db_operations import get_in_db, save_in_db
+from utils.db_operations import get_in_db, save_in_db,update_checker
 from utils.paginatsiya import pagination
 from sqlalchemy.orm import joinedload
 
@@ -44,16 +44,20 @@ def create_customers_y(form, db,this_user):
         raise HTTPException(status_code=200,detail=new_customers_db.id)
 def update_customers_y(form,db,this_user):
     if get_in_db(db, Customers, form.id):
-        db.query(Customers).filter(Customers.id == form.id).update({
-            Customers.id: form.id,
-            Customers.name: form.name,
-            Customers.type: form.type,
-            Customers.comment: form.comment,
-            Customers.user_id: this_user.id,
-            Customers.branch_id: this_user.branch_id,
-            Customers.balance: form.balance
-        })
-        db.commit()
+        u_check = update_checker(db,Customers,form.id,form)
+        if u_check == "Can":
+            db.query(Customers).filter(Customers.id == form.id).update({
+                Customers.id: form.id,
+                Customers.name: form.name,
+                Customers.type: form.type,
+                Customers.comment: form.comment,
+                Customers.user_id: this_user.id,
+                Customers.branch_id: this_user.branch_id,
+                Customers.balance: form.balance
+            })
+            db.commit()
+        else:
+             return u_check
         
         for i in form.phones:
             phone_id = i.id
@@ -62,3 +66,7 @@ def update_customers_y(form,db,this_user):
             update_phone(phone_id, comment, number, form.id, this_user.id, db, 'customers',this_user.branch_id)
 
 
+def delete_customer_r(id, db):
+    get_in_db(db, Customers, id)
+    db.query(Customers).filter(Customers.id == id).delete()
+    db.commit()

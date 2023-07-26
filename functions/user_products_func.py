@@ -36,3 +36,8 @@ def update_user_products_y(form,db,this_user):
             User_products.branch_id: this_user.branch_id
         })
         db.commit()
+
+def delete_user_products_r(id, db):
+    get_in_db(db, User_products, id)
+    db.query(User_products).filter(User_products.id == id).delete()
+    db.commit()

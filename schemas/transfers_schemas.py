@@ -24,6 +24,7 @@ class CreateTransfer(BaseModel):
 class UpdateTransfer(BaseModel):
     id: int
     name: str
+    product_id: int
     quantity: int
     date: date
     warehoueser_id: int

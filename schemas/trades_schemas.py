@@ -9,6 +9,7 @@ class CreateTrade(BaseModel):
 
 class UpdateTrade(BaseModel):
     id: int
+    name: str
     warehouse_pr_id: int
     quantity: int
     order_id: int

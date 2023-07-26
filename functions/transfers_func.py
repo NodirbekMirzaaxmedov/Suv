@@ -4,18 +4,20 @@ from models.transfers import Transfers
 
 
 def all_transfers(search, page, limit, db):
-    if search :
+    transfers = db.query(Transfers)
+    if search:
         search_formatted = "%{}%".format(search)
-        search_filter = (Transfers.name.like(search_formatted))
-    else :
-        search_filter = Transfers.id > 0
-    transfers = db.query(Transfers).filter(search_filter).order_by(Transfers.date.asc())
+        transfers = transfers.filter(Transfers.name.like(search_formatted))
+    # else:
+    #     transfers = transfers.id > 0
+    transfers = transfers.order_by(Transfers.name.asc())
     return pagination(transfers, page, limit)
 
 
 def create_transfers_y(form, db,this_user):
     new_transfers_db = Transfers(
         name=form.name,
+        product_id=form.product_id,
         quantity=form.quantity,
         date=form.date,
         warehoueser_id=form.warehoueser_id,
@@ -31,6 +33,7 @@ def update_transfers_y(form,db,this_user):
         db.query(Transfers).filter(Transfers.id == form.id).update({
             Transfers.id: form.id,
             Transfers.name: form.name,
+            Transfers.product_id: form.product_id,
             Transfers.quantity: form.quantity,
             Transfers.date: form.date,
             Transfers.warehoueser_id: form.warehoueser_id,
@@ -39,3 +42,7 @@ def update_transfers_y(form,db,this_user):
         })
         db.commit()
 
+def delete_transfers_r(id, db):
+    get_in_db(db, Transfers, id)
+    db.query(Transfers).filter(Transfers.id == id).delete()
+    db.commit()

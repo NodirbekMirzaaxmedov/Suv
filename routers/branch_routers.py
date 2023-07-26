@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from functions.branch_func import all_branches, create_branche_r, update_branche_r
+from functions.branch_func import all_branches, create_branche_r, delete_branch_r, update_branche_r
 from models.branches import Branches
 from utils.auth import get_current_user
 from schemas.users_schemas import CreateUser
@@ -43,6 +43,12 @@ def update_branches(this_branche: UpdateBranche, db: Session = Depends(database)
     raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 
 
+@branches_router.delete("/delete_branch")
+def delete_branch(id: int, db: Session = Depends(database),
+                current_user: CreateUser = Depends(get_current_user)):
+    role_verification(user=current_user)
+    delete_branch_r(id, db)
+    raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 
 
 

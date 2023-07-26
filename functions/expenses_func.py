@@ -4,7 +4,7 @@ from models.kassa import Kassas
 from utils.db_operations import save_in_db, get_in_db
 from utils.paginatsiya import pagination
 from models.expenses import Expenses
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def all_expenses(search, page, limit, db,branch_id):
@@ -43,6 +43,9 @@ def create_expenses_y(form, db,this_user):
 
 def update_expenses_y(form,db,this_user):
     if get_in_db(db,Expenses, form.id):
+        allowed_time = timedelta(minutes=5)
+        if get_in_db(db, Expenses, form.id).time + allowed_time < datetime.now():
+            raise HTTPException(status_code=400, detail="Time is already up!")
         old_expenses = get_in_db(db,Expenses,form.id)
         new_expense_money = old_expenses.money + form.money
         kassa = get_in_db(db,Kassas,old_expenses.kassa_id)
@@ -60,3 +63,10 @@ def update_expenses_y(form,db,this_user):
         else:
             raise HTTPException(status_code=400,detail="Akaxon kassada buncha pul mavjud bas")
 
+def delete_expenses_r(id, db):
+    allowed_time = timedelta(minutes=5)
+    if get_in_db(db, Expenses, id).time + allowed_time < datetime.now():
+        raise HTTPException(status_code=400, detail="Time is already up!")
+    get_in_db(db, Expenses, id)
+    db.query(Expenses).filter(Expenses.id == id).delete()
+    db.commit()

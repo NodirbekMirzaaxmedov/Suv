@@ -21,7 +21,7 @@ def all_supplies_r(search,limit,page,db,branch_id):
 
 def create_supplies_r(form,db,this_user):
     if db.query(Supplies).filter(Supplies.name == form.name).first():
-            raise HTTPException(status_code=400, detail="Bunday taminotchi allaqachon bazada bor")
+            raise HTTPException(status_code=400, detail="Bunday taminot allaqachon bazada bor")
     if db.query(Products).filter(Products.id != form.product_id).first():
             raise HTTPException(status_code=404, detail="Bunday product yoq")
     
@@ -66,3 +66,8 @@ def update_supplies_r(form,db,this_user):
         #     comment = i.comment
         #     number = i.number
         #     update_phone(phone_id, comment, number, form.id, this_user.id, db, 'supplies',form.branch_id)
+
+def delete_supplies_r(id, db):
+    get_in_db(db, Supplies, id)
+    db.query(Supplies).filter(Supplies.id == id).delete()
+    db.commit()

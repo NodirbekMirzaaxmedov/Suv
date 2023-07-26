@@ -18,6 +18,7 @@ def all_customer_loc_products(search, page, limit, db,branch_id):
 
 
 def create_customer_loc_product_y(form, db,this_user):
+    
     new_customer_loc_product = Customer_loc_products(
         name = form.name,
         customer_loc_id=form.customer_loc_id,
@@ -40,3 +41,7 @@ def update_customer_loc_product_y(form,db,this_user):
         })
         db.commit()
 
+def delete_customer_loc_products_r(id, db):
+    get_in_db(db, Customer_loc_products, id)
+    db.query(Customer_loc_products).filter(Customer_loc_products.id == id).delete()
+    db.commit()

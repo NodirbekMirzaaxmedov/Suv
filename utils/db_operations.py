@@ -51,3 +51,11 @@ def yangiledi(
     db.commit()
     db.refresh(data)
     return data
+
+def update_checker(db,model,id,form):
+    db_object = get_in_db(db,model,id)
+    if db.query(model).filter(model.name == form.name).first() and db_object.name != form.name:
+        raise HTTPException(status_code=400, detail=f"{form.name} already exists")
+    else:
+        a = "Can"
+        return a

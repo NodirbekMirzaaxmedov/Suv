@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Body, HTTPException, Depends, UploadFile,Form
 from sqlalchemy.orm import Session
 from functions.products_func import all_products,create_products_y,update_products_y
-from functions.uploaded_func import all_files_r, create_file_e, update_file_e
+from functions.uploaded_func import all_files_r, create_file_e, delete_file_e, update_file_e
 from models.products import Products
 from utils.auth import get_current_user
 from schemas.uploaded_schemas import CreateUpload, UpdateUpload
@@ -46,6 +46,12 @@ def update_file(this_file: CreateUpload, db: Session = Depends(database),
     update_file_e(this_file.id,this_file.file,this_file.source,this_file.source_id,db,current_user,this_file.comment)
     raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 
+@uploaded_router.delete("/delete_uploaded")
+def delete_uploaded(id: int, db: Session = Depends(database),
+                current_user: CreateUser = Depends(get_current_user)):
+    role_verification(user=current_user)
+    delete_file_e(id, db)
+    raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 
 
 

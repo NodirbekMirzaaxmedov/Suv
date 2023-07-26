@@ -1,7 +1,7 @@
 from fastapi import APIRouter,HTTPException,Depends
 from sqlalchemy.orm import Session
 from db import database
-from functions.contracts_func import all_contracts_r, create_contract_y, update_contract_y
+from functions.contracts_func import all_contracts_r, create_contract_y, delete_contracts_r, update_contract_y
 from models.contracts import Contracts
 from schemas.contracts_schemas import CreateContract, UpdateContract
 from schemas.users_schemas import CreateUser
@@ -34,4 +34,11 @@ def create_contract(new_contract: CreateContract,db: Session = Depends(database)
 def update_contract(this_supplier: UpdateContract,db: Session = Depends(database),current_user: CreateUser = Depends(get_current_user)):
     role_verification(user=current_user)
     update_contract_y(this_supplier,db,current_user)
+    raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
+
+@contracts_router.delete("/delete_contracts")
+def delete_contracts(id: int, db: Session = Depends(database),
+                current_user: CreateUser = Depends(get_current_user)):
+    role_verification(user=current_user)
+    delete_contracts_r(id, db)
     raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")

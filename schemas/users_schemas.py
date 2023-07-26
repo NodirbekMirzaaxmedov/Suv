@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 from sqlalchemy import Boolean
@@ -13,6 +13,7 @@ class CreateUser(BaseModel):
     role: str
     status: str
     balance_oylik: int
+    balance: int
     phones: List[CreatePhone]
 
 
@@ -24,4 +25,5 @@ class UpdateUser(BaseModel):
     role: str
     status: str
     balance_oylik: int
+    balance: int
     phones: List[UpdatePhone]

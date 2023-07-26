@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from functions.products_func import all_products,create_products_y,update_products_y
+from functions.products_func import all_products,create_products_y, delete_product_r,update_products_y
 from models.products import Products
 from utils.auth import get_current_user
 from schemas.users_schemas import CreateUser
@@ -44,6 +44,12 @@ def update_products(this_product: UpdateProducts, db: Session = Depends(database
     raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 
 
+@products_router.delete("/delete_products")
+def delete_products(id: int, db: Session = Depends(database),
+                current_user: CreateUser = Depends(get_current_user)):
+    role_verification(user=current_user)
+    delete_product_r(id, db)
+    raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 
 
 

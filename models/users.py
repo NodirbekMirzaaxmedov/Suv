@@ -15,6 +15,7 @@ class Users(Base):
     status = Column(String(999))
     role = Column(String(999))
     branch_id = Column(Integer)
+    balance = Column(Numeric)
     balance_oylik = Column(Integer)
     token = Column(String(999), default='token')
 

@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from utils.db_operations import save_in_db, get_in_db
+from utils.db_operations import save_in_db, get_in_db,update_checker
 from utils.paginatsiya import pagination
 from models.categories import Categories
 
@@ -38,3 +38,7 @@ def update_category_y(form, db,thisuser):
             Categories.user_id: thisuser.id
         })
         db.commit()
+def delete_categories_r(id, db):
+    get_in_db(db, Categories, id)
+    db.query(Categories).filter(Categories.id == id).delete()
+    db.commit()

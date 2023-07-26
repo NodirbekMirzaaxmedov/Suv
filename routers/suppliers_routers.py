@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from functions.suppliers_func import all_suppliers, create_supplier_e, update_supplier_e
+from functions.suppliers_func import all_suppliers, create_supplier_e, delete_supplier_r, update_supplier_e
 from models.suppliers import Suppliers
 from schemas.suppliers_schemas import CreateSuppliers, UpdateSuppliers
 from utils.auth import get_current_active_user
@@ -43,3 +43,9 @@ def update_suppliers(this_suppliers: UpdateSuppliers, db: Session = Depends(data
 
 
 
+@suppliers_router.delete("/delete_suppliers")
+def delete_supplier(id: int, db: Session = Depends(database),
+                current_user: CreateUser = Depends(get_current_active_user)):
+    role_verification(user=current_user)
+    delete_supplier_r(id, db)
+    raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")

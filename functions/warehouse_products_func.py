@@ -42,20 +42,19 @@ def create_warehouse_products_e(form, db, thisuser):
 
 
 def update_warehouse_products_e(form, db, thisuser):
-    if get_in_db(db, Warehouses_products, form.id) is None\
-            or get_in_db(db, Phones, form.phones[0].id) is None:
-        raise HTTPException(status_code=400, detail="Warehouse or Phone not found!")
-
-    db.query(Warehouses_products).filter(Warehouses_products.id == form.id).update({
-        Warehouses_products.id: form.id,
-        Warehouses_products.name: form.name,
-        Warehouses_products.product_id: form.product_id,
-        Warehouses_products.quantity: form.quantity,
-        Warehouses_products.price: form.price,
-        Warehouses_products.warehouse_id: form.warehouse_id,
-        Warehouses_products.branch_id: thisuser.branch_id
-    })
-    db.commit()
+    if get_in_db(db, Warehouses_products, form.id):
+        db.query(Warehouses_products).filter(Warehouses_products.id == form.id).update({
+            Warehouses_products.id: form.id,
+            Warehouses_products.name: form.name,
+            Warehouses_products.product_id: form.product_id,
+            Warehouses_products.quantity: form.quantity,
+            Warehouses_products.price: form.price,
+            Warehouses_products.warehouse_id: form.warehouse_id,
+            Warehouses_products.branch_id: thisuser.branch_id
+        })
+        db.commit()
+    else: 
+        raise HTTPException(status_code=400,detail="Warehouse products topilmadi")
 
     # for i in form.phones:
     #     phone_id = i.id
@@ -65,6 +64,9 @@ def update_warehouse_products_e(form, db, thisuser):
 
 
 
-
+def delete_warehouse_products_r(id, db):
+    get_in_db(db, Warehouses_products, id)
+    db.query(Warehouses_products).filter(Warehouses_products.id == id).delete()
+    db.commit()
 
 

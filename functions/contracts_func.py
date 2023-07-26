@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from models.users import Users
 from utils.db_operations import save_in_db, get_in_db
 from utils.paginatsiya import pagination
@@ -17,17 +18,19 @@ def all_contracts_r(search, page, limit, db,branch_id):
 
 
 def create_contract_y(form, db,this_user):
-    new_contract_db = Contracts(
-        name=form.name,
-        customer_loc_id=form.customer_loc_id,
-        quantity=form.quantity,
-        deadline=form.deadline,
-        status="True",
-        user_id=this_user.id,
-        branch_id=this_user.branch_id
-    )
-    save_in_db(db, new_contract_db)
-
+    if form.name != db.query(Contracts.name):
+        new_contract_db = Contracts(
+            name=form.name,
+            customer_loc_id=form.customer_loc_id,
+            quantity=form.quantity,
+            deadline=form.deadline,
+            status="True",
+            user_id=this_user.id,
+            branch_id=this_user.branch_id
+        )
+        save_in_db(db, new_contract_db)
+    else:
+        raise HTTPException(status_code=400,detail="With this  name contract alread have in our base")
 
 def update_contract_y(form,db,this_user):
     if get_in_db(db,Contracts, form.id):
@@ -40,3 +43,7 @@ def update_contract_y(form,db,this_user):
         })
         db.commit()
 
+def delete_contracts_r(id, db):
+    get_in_db(db, Contracts, id)
+    db.query(Contracts).filter(Contracts.id == id).delete()
+    db.commit()

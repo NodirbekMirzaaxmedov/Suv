@@ -2,7 +2,7 @@ import inspect
 
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from functions.warehouse_products_func import all_warehouses_products,create_warehouse_products_e,update_warehouse_products_e
+from functions.warehouse_products_func import all_warehouses_products,create_warehouse_products_e, delete_warehouse_products_r,update_warehouse_products_e
 from models.warehouse_products import Warehouses_products
 from utils.auth import get_current_user
 from utils.db_operations import get_in_db
@@ -41,6 +41,13 @@ def update_warehouse(this_warehouse: Warehouse_products_update, db: Session = De
                 current_user: CreateUser = Depends(get_current_user)):
     role_verification(user=current_user)
     update_warehouse_products_e(this_warehouse, db, current_user)
+    raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
+
+@warehouses_products_router.delete("/delete_warehouses_products")
+def delete_order(id: int, db: Session = Depends(database),
+                current_user: CreateUser = Depends(get_current_user)):
+    role_verification(user=current_user)
+    delete_warehouse_products_r(id, db)
     raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 
 

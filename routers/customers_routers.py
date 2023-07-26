@@ -1,6 +1,7 @@
 from fastapi import HTTPException,APIRouter,Depends
 from sqlalchemy.orm import Session
-from functions.customers_func import all_customers, create_customers_y, update_customers_y
+from functions.customer_loactions_functions import delete_customer_locations_r
+from functions.customers_func import all_customers, create_customers_y, delete_customer_r, update_customers_y
 from models.customers import Customers
 from utils.auth import get_current_user
 from schemas.customers_schemas import Create_customer, Update_customer
@@ -37,3 +38,9 @@ def update_customers(this_customer: Update_customer, db: Session = Depends(datab
     update_customers_y(this_customer, db, current_user)
     raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")
 
+@customers_routers.delete("/delete_customers")
+def delete_customers(id: int, db: Session = Depends(database),
+                current_user: CreateUser = Depends(get_current_user)):
+    role_verification(user=current_user)
+    delete_customer_r(id, db)
+    raise HTTPException(status_code=200, detail="Amaliyot muvaffaqiyatli amalga oshirildi")

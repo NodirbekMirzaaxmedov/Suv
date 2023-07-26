@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from functions.phones_func import create_phone, update_phone
 from models.phones import Phones
-from utils.db_operations import save_in_db, get_in_db
+from utils.db_operations import save_in_db, get_in_db,update_checker
 from utils.paginatsiya import pagination
 from models.branches import Branches
 
@@ -20,7 +20,7 @@ def all_branches(search, page, limit, status, db):
     return pagination(branches, page, limit)
 
 
-def create_branche_r(form, db, thisuser):   
+def create_branche_r(form, db, thisuser):
     if db.query(Branches).filter(Branches.name == form.name).first():
         raise HTTPException(status_code=400, detail="Bunday malumot allaqachon bazada bor")
     if db.query(Branches).filter(Branches.adress == form.adress).first():
@@ -48,15 +48,19 @@ def update_branche_r(form, db, thisuser):
     if get_in_db(db, Branches, form.id) is None or get_in_db(db, Phones, form.phones[0].id) is None:
         raise HTTPException(status_code=400, detail="Branch or Phone not found!")
 
-    db.query(Branches).filter(Branches.id == form.id).update({
-        Branches.id: form.id,
-        Branches.name: form.name,
-        Branches.adress: form.adress,
-        Branches.map_long: form.map_long,
-        Branches.map_lat: form.map_lat,
-        Branches.status: form.status
-    })
-    db.commit()
+    u_check = update_checker(db,Branches,form.id,form)
+    if u_check == "Can":
+        db.query(Branches).filter(Branches.id == form.id).update({
+            Branches.id: form.id,
+            Branches.name: form.name,
+            Branches.adress: form.adress,
+            Branches.map_long: form.map_long,
+            Branches.map_lat: form.map_lat,
+            Branches.status: form.status
+        })
+        db.commit()
+    else:
+        return update_checker(db,Branches,form.id,form)
 
     for i in form.phones:
         phone_id = i.id
@@ -65,4 +69,8 @@ def update_branche_r(form, db, thisuser):
         update_phone(phone_id, comment, number, form.id, thisuser.id, db, 'branch',form.id or None)
 
 
+def delete_branch_r(id, db):
+    get_in_db(db, Branches, id)
+    db.query(Branches).filter(Branches.id == id).delete()
+    db.commit()
 
